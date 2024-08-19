@@ -1,1 +1,1 @@
-npx dotenv-vault@latest push
+npx dotenv-vault@latest pull

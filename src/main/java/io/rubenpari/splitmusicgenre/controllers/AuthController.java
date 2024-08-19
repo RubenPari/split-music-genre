@@ -2,6 +2,7 @@ package io.rubenpari.splitmusicgenre.controllers;
 
 import io.rubenpari.splitmusicgenre.services.EnvConfig;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final SpotifyApi spotifyApi;
@@ -25,7 +27,7 @@ public class AuthController {
         this.envConfig = envConfig;
     }
 
-    @GetMapping("/api/v1/auth/login")
+    @GetMapping("/login")
     public RedirectView login() {
         String state = UUID.randomUUID().toString();
 
@@ -38,7 +40,7 @@ public class AuthController {
         return new RedirectView(authorizationCodeUriRequest.execute().toString());
     }
 
-    @GetMapping("/api/v1/auth/callback")
+    @GetMapping("/callback")
     public String callback(@RequestParam("code") String code) {
         try {
             AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
@@ -54,13 +56,13 @@ public class AuthController {
                 return "Error retrieving User's information: " + e.getMessage();
             }
 
-            return "Access Token obtained successfully";
+            return "Successfully authenticated!";
         } catch (IOException | SpotifyWebApiException | org.apache.hc.core5.http.ParseException e) {
             return "Error obtaining Access Token: " + e.getMessage();
         }
     }
 
-    @GetMapping("/api/v1/auth/logout")
+    @GetMapping("/logout")
     public String logout() {
         spotifyApi.setAccessToken(null);
         spotifyApi.setRefreshToken(null);
